@@ -1,10 +1,18 @@
 package com.project.parser;
 
+import com.project.parser.model.Project;
+import com.project.parser.service.ClassParser;
+import com.project.parser.service.FieldParser;
+import com.project.parser.service.MavenProjectParser;
+import com.project.parser.service.ResourceParser;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.library.ClassLibrary;
 import com.thoughtworks.qdox.model.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.time.StopWatch;
 
 import java.io.File;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,8 +20,17 @@ import java.util.List;
 /**
  * Created by konstantin on 27.09.2020.
  */
+@Slf4j
 public class Runner {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
+        long start = System.currentTimeMillis();
+        MavenProjectParser projectParser = new MavenProjectParser(
+                new ClassParser(new FieldParser()),
+                new ResourceParser());
+        Project project = projectParser.parseProject(Paths.get("D:\\workspace\\konstantin-examples"));
+        log.info("Time to parse project = {} ms", System.currentTimeMillis() - start);
+
+
         JavaProjectBuilder builder = new JavaProjectBuilder();
         File sourceDir = new File("D:\\workspace\\konstantin-examples");
         builder.addSourceTree(sourceDir);
