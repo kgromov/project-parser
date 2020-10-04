@@ -29,34 +29,45 @@ public class MavenProjectParser implements ProjectParser {
         project.setName(projectRoot.getFileName().toString());
         project.setPath(projectRoot);
 
-        List<Module> modules = new ArrayList<>();
         DocumentBuilder dBuilder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
         Document document = dBuilder.parse(pom.toFile());
         NodeList moduleNodes = document.getElementsByTagName("module");
-        for (int i = 0;  i < moduleNodes.getLength(); i++) {
+
+        if (moduleNodes.getLength() == 0) {
+            setupProjectWithoutModules(project);
+        }
+        else {
+            setupProjectWithModules(project, moduleNodes);
+        }
+
+        return project;
+    }
+
+    private void setupProjectWithModules(Project project, NodeList moduleNodes) {
+        List<Module> modules = new ArrayList<>();
+        for (int i = 0; i < moduleNodes.getLength(); i++) {
             Node moduleNode = moduleNodes.item(i);
             String moduleName = moduleNode.getTextContent();
-            try {
-                Module module = new Module();
-                module.setName(moduleName);
-                module.setPath(projectRoot.resolve(moduleName));
-                // FIXME: in next versions should be lazy
-//                module.setClasses(classParser.parse(module.getPath()));
-//            module.setResources(resourceParser.parse(module.getPath()));
-//                project.addModule(module);
-                modules.add(module);
-            }
-            catch (Exception e) {
-                int a = 1;
-            }
+            Module module = new Module();
+            module.setName(moduleName);
+            module.setPath(project.getPath().resolve(moduleName));
+            // FIXME: in next versions should be lazy
+            module.setClasses(classParser.parse(module.getPath()));
+            module.setResources(resourceParser.parse(module.getPath()));
+            project.addModule(module);
+//            modules.add(module);
         }
         // 16s vs 18s consequently - WTF?
-        modules.parallelStream().forEach(m ->
+       /* modules.parallelStream().forEach(m ->
         {
             ClassParser parser = new ClassParser(new FieldParser());
             parser.parse(m.getPath());
         });
-        project.setModules(modules);
-        return project;
+        project.setModules(modules);*/
+    }
+
+    private void setupProjectWithoutModules(Project project) {
+        project.setClassses(classParser.parse(project.getPath()));
+        project.setResources(resourceParser.parse(project.getPath()));
     }
 }

@@ -1,6 +1,8 @@
 package com.project.parser.service;
 
+import com.project.parser.model.Annotation;
 import com.project.parser.model.Clazz;
+import com.project.parser.model.Method;
 import com.thoughtworks.qdox.JavaProjectBuilder;
 import com.thoughtworks.qdox.model.JavaClass;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +37,8 @@ public class ClassParser {
         clazz.setPath(Paths.get(javaClass.getSource().getURL().toURI()));
         clazz.setPackageName(javaClass.getPackageName());
         clazz.setFields(fieldParser.parse(javaClass));
+        javaClass.getMethods().stream().map(Method::new).forEach(clazz::addMethod);
+        javaClass.getAnnotations().stream().map(Annotation::new).forEach(clazz::addAnnotation);
         return clazz;
     }
 }
