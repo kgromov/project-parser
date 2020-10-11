@@ -21,24 +21,27 @@ public class ParserConfig {
 
     private Path projectPath;
     private ProjectType type = ProjectType.DEFAULT;
+    private boolean isEnableEnpointsParser;
     private Pattern modulesRegExp;
     private Set<String> inclusionModules = new HashSet<>();
     private Set<String> exclusionModules = new HashSet<>();
 
     private ParserConfig(Properties properties) {
-        String path = properties.get("project.path").toString().trim();
+        String path = getPropertyValue(properties, "project.path");
         this.projectPath = Paths.get(path);
-        String type = properties.get("project.type").toString().trim();
+        String type = getPropertyValue(properties,"project.type");
         this.type = ProjectType.getType(type);
-        String inclusions = properties.get("modules.include").toString().trim();
+        String endpointParserEnabled = getPropertyValue(properties, " project.enableEnpointsParsere");
+        this.isEnableEnpointsParser = Boolean.parseBoolean(endpointParserEnabled);
+        String inclusions = getPropertyValue(properties,"modules.include");
         if (StringUtils.isNotBlank(inclusions)) {
             Collections.addAll(inclusionModules, inclusions.split(","));
         }
-        String exclusions = properties.get("modules.exclude").toString().trim();
+        String exclusions = getPropertyValue(properties,"modules.exclude");
         if (StringUtils.isNotBlank(exclusions)) {
             Collections.addAll(exclusionModules, exclusions.split(","));
         }
-        String modulesPattern = properties.get("modules.pattern").toString().trim();
+        String modulesPattern = getPropertyValue(properties,"modules.pattern");
         if (StringUtils.isNotBlank(exclusions)) {
             try {
                 this.modulesRegExp = Pattern.compile(modulesPattern);
@@ -55,6 +58,11 @@ public class ParserConfig {
         properties.load(inputStream);
         return properties;
     }
+
+    private static String getPropertyValue(Properties properties, String propertyName) {
+        return properties.get(propertyName).toString().trim();
+    }
+
 
     public static ParserConfig getConfig() {
         if (INSTANCE == null) {

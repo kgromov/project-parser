@@ -6,9 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
-import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -24,6 +22,7 @@ public class Method {
     private final String returnType;
     private final Map<String, String> arguments;
     private final Map<String, Annotation> annotations;
+    private final String methodSourceCode;
 
     public Method(JavaMethod method) {
         this.name = method.getName();
@@ -33,6 +32,7 @@ public class Method {
         this.annotations = method.getAnnotations().stream()
                 .map(Annotation::new)
                 .collect(Collectors.toMap(Annotation::getName, Function.identity()));
+        this.methodSourceCode = method.getSourceCode();
     }
 
     public Map<String, String> getArguments() {
@@ -41,5 +41,17 @@ public class Method {
 
     public Map<String, Annotation> getAnnotations() {
         return Collections.unmodifiableMap(annotations);
+    }
+
+    public boolean hasAnnotations() {
+        return !annotations.isEmpty();
+    }
+
+    public boolean hasAnnotation(Class<?> clazz) {
+        return annotations.containsKey(clazz.getName());
+    }
+
+    public boolean hasAnnotationByName(String annotationName) {
+        return annotations.keySet().stream().anyMatch(name -> name.endsWith(annotationName));
     }
 }
