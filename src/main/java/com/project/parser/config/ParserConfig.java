@@ -33,7 +33,7 @@ public class ParserConfig {
         this.projectPath = Paths.get(path);
         String type = getPropertyValue(properties,"project.type");
         this.type = ProjectType.getType(type);
-        String endpointParserEnabled = getPropertyValue(properties, " project.enableEnpointsParsere");
+        String endpointParserEnabled = getPropertyValue(properties, " project.enableEnpointsParser");
         this.isEnableEnpointsParser = Boolean.parseBoolean(endpointParserEnabled);
         String inclusions = getPropertyValue(properties,"modules.include");
         if (StringUtils.isNotBlank(inclusions)) {

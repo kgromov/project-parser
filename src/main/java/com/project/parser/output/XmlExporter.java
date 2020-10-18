@@ -66,6 +66,17 @@ public class XmlExporter implements Exporter {
         }
     }
 
+    @Override
+    @SneakyThrows
+    public Path getOutputFile() {
+        ParserConfig config = ParserConfig.getConfig();
+        Path projectPath = config.getProjectPath();
+        String outputFileName = Files.exists(projectPath) ? projectPath.getFileName().toString() : "documentation";
+        Path outputDir = Paths.get(config.getOutputDir());
+        Files.createDirectories(outputDir);
+        return outputDir.resolve(outputFileName + ".xml");
+    }
+
     @SneakyThrows
     private Document initXmlDocument() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -77,20 +88,16 @@ public class XmlExporter implements Exporter {
 
     @SneakyThrows
     private void exportToXml(Document document) {
-        ParserConfig config = ParserConfig.getConfig();
         Transformer tr = TransformerFactory.newInstance().newTransformer();
         tr.setOutputProperty(OutputKeys.INDENT, "yes");
         tr.setOutputProperty(OutputKeys.METHOD, "xml");
         tr.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
         tr.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
         // send DOM to file
-        Path projectPath = config.getProjectPath();
-        String outputFileName = Files.exists(projectPath) ? projectPath.getFileName().toString() : "documentation";
-        Path outputDir = Paths.get(config.getOutputDir());
-        Files.createDirectories(outputDir);
-        Path outputFilePath = outputDir.resolve(outputFileName + ".xml");
-        tr.transform(new DOMSource(document), new StreamResult(new FileOutputStream(outputFilePath.toString())));
+        tr.transform(new DOMSource(document), new StreamResult(new FileOutputStream(getOutputFile().toString())));
     }
+
+
 
     private void appendModules(Document document, Element projectNode, Collection<Module> modules) {
         Element modulesNode = document.createElement("Modules");

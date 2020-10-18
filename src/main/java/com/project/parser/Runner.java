@@ -2,6 +2,7 @@ package com.project.parser;
 
 import com.project.parser.config.ParserConfig;
 import com.project.parser.model.Project;
+import com.project.parser.output.CsvExporter;
 import com.project.parser.output.Exporter;
 import com.project.parser.output.XmlExporter;
 import com.project.parser.service.ClassParser;
@@ -33,7 +34,8 @@ public class Runner {
                 new ResourceParser());
 //        Project project = projectParser.parseProject(Paths.get("D:\\workspace\\konstantin-examples"));
         Project project = projectParser.parseProject(Paths.get("D:\\course_materials\\Spring\\course\\spring-examples"));
-        Exporter exporter = new XmlExporter();
+//        Exporter exporter = new XmlExporter();
+        Exporter exporter = new CsvExporter();
         exporter.export(project);
         log.info("Time to parse project = {} ms", System.currentTimeMillis() - start);
 
