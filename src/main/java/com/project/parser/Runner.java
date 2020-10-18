@@ -2,6 +2,8 @@ package com.project.parser;
 
 import com.project.parser.config.ParserConfig;
 import com.project.parser.model.Project;
+import com.project.parser.output.Exporter;
+import com.project.parser.output.XmlExporter;
 import com.project.parser.service.ClassParser;
 import com.project.parser.service.FieldParser;
 import com.project.parser.service.MavenProjectParser;
@@ -31,10 +33,12 @@ public class Runner {
                 new ResourceParser());
 //        Project project = projectParser.parseProject(Paths.get("D:\\workspace\\konstantin-examples"));
         Project project = projectParser.parseProject(Paths.get("D:\\course_materials\\Spring\\course\\spring-examples"));
+        Exporter exporter = new XmlExporter();
+        exporter.export(project);
         log.info("Time to parse project = {} ms", System.currentTimeMillis() - start);
 
 
-        JavaProjectBuilder builder = new JavaProjectBuilder();
+   /*     JavaProjectBuilder builder = new JavaProjectBuilder();
 //        File sourceDir = new File("D:\\workspace\\konstantin-examples");
         File sourceDir = new File("D:\\course_materials\\Spring\\course\\spring-examples");
         builder.addSourceTree(sourceDir);
@@ -55,6 +59,6 @@ public class Runner {
         JavaSource source = javaClass.getSource();
         List<JavaTypeVariable<JavaGenericDeclaration>> typeParameters = javaClass.getTypeParameters();
         List<DocletTag> tags = javaClass.getTags();
-        String comment = javaClass.getComment();
+        String comment = javaClass.getComment();*/
     }
 }

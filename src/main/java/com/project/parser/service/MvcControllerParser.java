@@ -4,9 +4,11 @@ import com.project.parser.model.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static com.project.parser.utils.AnnotationUtils.getAnnotationValue;
+import static com.project.parser.utils.AnnotationUtils.hasAnnotationByName;
 
 /**
  * Created by konstantin on 04.10.2020.
@@ -20,40 +22,35 @@ public class MvcControllerParser {
         String commonPathPrefix = getAnnotationValue(clazz.getAnnotations(), "RequestMapping").orElse("");
         return clazz.getMethods().stream()
                 .filter(Method::hasAnnotations)
-                .filter(m -> m.hasAnnotationByName("Mapping"))
+                .filter(m -> hasAnnotationByName(m.getAnnotations(), "Mapping"))
                 .map(m -> {
                     String methodName = m.getName();
                     String from = getAnnotationValue(m.getAnnotations(), "Mapping").orElse("");
-                    Optional<String> viewName = getViewName(m);
-                    String to = commonPathPrefix + '/' + viewName.orElse("");
+                    String viewName = getViewName(m).orElse("");
+                    String resolvedViewByClassConstant = fields.getOrDefault(viewName, viewName);
+                    String to = commonPathPrefix + '/' + resolvedViewByClassConstant;
                     HttpMethod httpMethod = getAnnotationValue(m.getAnnotations(), "method")
                             .map(HttpMethod::valueOf).orElse(HttpMethod.GET);
-                    return new RequestMethod(methodName, from, to, httpMethod);
+                    return new RequestMethod(methodName, from, to, httpMethod, m.getArguments());
                 })
                 .collect(Collectors.toList());
     }
 
-    private Optional<String> getAnnotationValue(Map<String, Annotation> annotations, String annotationName) {
-        return annotations.entrySet().stream()
-                .filter(e -> e.getKey().endsWith(annotationName))
-                .map(Map.Entry::getValue)
-                .map(Annotation::getParams)
-                .map(p -> p.get("value"))
-                .filter(Objects::nonNull)
-                .findFirst();
-    }
-
     private Optional<String> getViewName(Method method) {
+        if (method.getReturnType().toLowerCase().contains("void")) {
+            return Optional.empty();
+        }
         String methodSourceCode = method.getMethodSourceCode();
+        int lengthOfReturnStatement = "return".length();
         int indexOfReturn = methodSourceCode.lastIndexOf("return");
         int lastIndexOfCatch = methodSourceCode.lastIndexOf("catch");
-        int lastIndexOfSemiColon = -1;
+        int lastIndexOfSemiColon;
         if (indexOfReturn < lastIndexOfCatch) {
             lastIndexOfSemiColon = methodSourceCode.substring(indexOfReturn, lastIndexOfCatch)
                     .lastIndexOf(';');
         } else {
             lastIndexOfSemiColon = methodSourceCode.lastIndexOf(';');
         }
-        return Optional.of(methodSourceCode.substring(indexOfReturn + 1, lastIndexOfSemiColon).trim());
+        return Optional.of(methodSourceCode.substring(indexOfReturn + lengthOfReturnStatement + 1, lastIndexOfSemiColon).trim());
     }
 }

@@ -5,6 +5,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Created by konstantin on 04.10.2020.
  */
@@ -13,8 +16,15 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class RequestMethod {
-    private String methodName;
+    private String name;
     private String from;
     private String to;
     private HttpMethod httpMethod;
+    private Map<String, String> arguments;
+
+    public String argumentsToString() {
+        return arguments.entrySet().stream()
+                .map(e -> e.getKey() + "=" + e.getValue())
+                .collect(Collectors.joining("\n"));
+    }
 }

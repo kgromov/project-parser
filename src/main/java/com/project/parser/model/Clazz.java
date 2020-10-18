@@ -46,5 +46,7 @@ public class Clazz {
         return Collections.unmodifiableMap(annotations);
     }
 
-
+    public boolean hasAnnotations() {
+        return !annotations.isEmpty();
+    }
 }

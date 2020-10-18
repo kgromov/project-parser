@@ -19,7 +19,7 @@ public class Project {
     private String name;
     private Path path;
     private Collection<Module> modules = new ArrayList<>();
-    private Collection<Clazz> classses;
+    private Collection<Clazz> classes;
     private Collection<Resource> resources;
 
     public void addModule(Module module) {
@@ -35,7 +35,7 @@ public class Project {
     }
 
     public Collection<Clazz> getClasses() {
-        return classses != null ? classses : Collections.emptyList();
+        return classes != null ? classes : Collections.emptyList();
     }
 
     public Collection<Resource> getResources() {

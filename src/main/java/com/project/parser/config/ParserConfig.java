@@ -25,6 +25,8 @@ public class ParserConfig {
     private Pattern modulesRegExp;
     private Set<String> inclusionModules = new HashSet<>();
     private Set<String> exclusionModules = new HashSet<>();
+    // output settings
+    private String outputDir = "target/project-documentation/";
 
     private ParserConfig(Properties properties) {
         String path = getPropertyValue(properties, "project.path");
@@ -49,6 +51,10 @@ public class ParserConfig {
                 log.warn("Invalid regExp pattern: {}", modulesPattern);
             }
         }
+        String outputDir = getPropertyValue(properties,"modules.pattern");
+        if (!outputDir.isEmpty()) {
+            this.outputDir = outputDir;
+        }
     }
 
     @SneakyThrows
@@ -60,9 +66,9 @@ public class ParserConfig {
     }
 
     private static String getPropertyValue(Properties properties, String propertyName) {
-        return properties.get(propertyName).toString().trim();
+        Object value = properties.get(propertyName);
+        return Optional.ofNullable(value).orElse("").toString().trim();
     }
-
 
     public static ParserConfig getConfig() {
         if (INSTANCE == null) {

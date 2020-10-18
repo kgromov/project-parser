@@ -67,7 +67,7 @@ public class MavenProjectParser implements ProjectParser {
     }
 
     private void setupProjectWithoutModules(Project project) {
-        project.setClassses(classParser.parse(project.getPath()));
+        project.setClasses(classParser.parse(project.getPath()));
         project.setResources(resourceParser.parse(project.getPath()));
     }
 }

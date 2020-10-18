@@ -46,12 +46,4 @@ public class Method {
     public boolean hasAnnotations() {
         return !annotations.isEmpty();
     }
-
-    public boolean hasAnnotation(Class<?> clazz) {
-        return annotations.containsKey(clazz.getName());
-    }
-
-    public boolean hasAnnotationByName(String annotationName) {
-        return annotations.keySet().stream().anyMatch(name -> name.endsWith(annotationName));
-    }
 }

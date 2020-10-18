@@ -6,6 +6,7 @@ import lombok.Setter;
 
 import java.nio.file.Path;
 import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Created by konstantin on 27.09.2020.
@@ -18,5 +19,9 @@ public class Module {
     private Path path;
     private Collection<Clazz> classes;
     private Collection<Resource> resources;
+
+    public Collection<Clazz> getClasses() {
+        return classes != null ? classes : Collections.emptyList();
+    }
 
 }
